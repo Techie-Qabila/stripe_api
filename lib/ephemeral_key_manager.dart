@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert' show utf8, json;
+import 'dart:convert' show json;
 
 import 'model/stripe_json_model.dart';
 import 'model/stripe_json_utils.dart';

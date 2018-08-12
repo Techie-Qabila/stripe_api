@@ -1,4 +1,4 @@
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import '../card_utils.dart';
 import '../stripe_network_utils.dart';

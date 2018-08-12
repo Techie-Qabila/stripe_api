@@ -1,3 +1,8 @@
-## [0.0.1] - 06-Aug-2018
+## 1.0.0
 
-Initial release
+* Fixed publish --dry-run issues/warnings
+
+
+## 0.0.1
+
+* Initial release

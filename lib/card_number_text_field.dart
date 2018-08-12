@@ -72,8 +72,10 @@ class _CardNumberFormatter extends TextInputFormatter {
       formattedNumber += cardParts[i];
     }
 
+    /*
     int cursorPosition = _updateSelectionIndex(formattedNumber.length,
         oldValue.composing.start, newValue.composing.end);
+        */
 
     return null;
   }
