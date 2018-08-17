@@ -232,8 +232,10 @@ class StripeApiHandler {
   }
 
   static String _encodeMap(Map<String, dynamic> params) {
-    return params.keys.map((key) => '${Uri.encodeComponent(key)}=${Uri
-        .encodeComponent(params[key].toString())}').join('&');
+    return params.keys
+        .map((key) =>
+            '${Uri.encodeComponent(key)}=${Uri.encodeComponent(params[key].toString())}')
+        .join('&');
   }
 
   static String _urlEncodeMap(dynamic data) {

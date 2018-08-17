@@ -10,6 +10,7 @@ import 'model/source.dart';
 import 'model/token.dart';
 import 'stripe_api_handler.dart';
 
+export 'card_number_formatter.dart';
 export 'card_utils.dart';
 export 'model/card.dart';
 export 'model/customer.dart';

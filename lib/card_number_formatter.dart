@@ -1,10 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'stripe_text_utils.dart';
 import 'card_utils.dart';
 import 'model/card.dart';
-import 'dart:math' as math;
+import 'stripe_text_utils.dart';
 
 final _spaceSetCommon = Set()..add(4)..add(9)..add(14);
 final _spaceSetAmex = Set()..add(4)..add(11);

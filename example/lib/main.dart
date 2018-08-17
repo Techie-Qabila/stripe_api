@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:convert' show utf8, json;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:stripe_api/card_number_text_field.dart';
-import 'package:stripe_api/stripe_api.dart';
 import 'package:http/http.dart' as http;
+import 'package:stripe_api/stripe_api.dart';
 
 const ContentTypeJson = 'application/json';
 
