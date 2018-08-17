@@ -6,9 +6,8 @@ import 'card_utils.dart';
 import 'model/card.dart';
 import 'dart:math' as math;
 
-final Set<int> SPACE_SET_COMMON = new Set()..add(4)..add(9)..add(14);
-final Set<int> SPACE_SET_AMEX = Set()..add(4)..add(11);
-
+final _spaceSetCommon = Set()..add(4)..add(9)..add(14);
+final _spaceSetAmex = Set()..add(4)..add(11);
 
 class CardNumberFormatter extends TextInputFormatter {
   final ValueChanged<String> onCardBrandChanged;
@@ -130,23 +129,25 @@ class CardNumberFormatter extends TextInputFormatter {
     _updateCardBrand(getPossibleCardType(partialNumber));
   }
 
-  /**
-   * Updates the selection index based on the current (pre-edit) index, and
-   * the size change of the number being input.
-   *
-   * @param newLength the post-edit length of the string
-   * @param editActionStart the position in the string at which the edit action starts
-   * @param editActionAddition the number of new characters going into the string (zero for
-   *                           delete)
-   * @return an index within the string at which to put the cursor
-   */
+  /// Updates the selection index based on the current (pre-edit) index, and the size change of the number being input.
+  ///
+  /// * [newLength] the post-edit length of the string
+  /// * [editActionStart] the position in the string at which the edit action starts
+  /// * [editActionAddition] the number of new characters going into the string (zero for delete)
+  /// * Returns an index within the string at which to put the cursor
   int _updateSelectionIndex(
-      int newLength, int editActionStart, int editActionAddition) {
+    int newLength,
+    int editActionStart,
+    int editActionAddition,
+  ) {
     int newPosition, gapsJumped = 0;
+    //
     Set<int> gapSet = StripeCard.AMERICAN_EXPRESS == _cardBrand
-        ? SPACE_SET_AMEX
-        : SPACE_SET_COMMON;
+        ? _spaceSetAmex
+        : _spaceSetCommon;
+    //
     bool skipBack = false;
+    //
     for (int gap in gapSet) {
       if (editActionStart <= gap &&
           editActionStart + editActionAddition > gap) {
@@ -169,23 +170,23 @@ class CardNumberFormatter extends TextInputFormatter {
   }
 }
 
-/**
- * Separates a card number according to the brand requirements, including prefixes of card
- * numbers, so that the groups can be easily displayed if the user is typing them in.
- * Note that this does not verify that the card number is valid, or even that it is a number.
- *
- * @param spacelessCardNumber the raw card number, without spaces
- * @param brand the {@link Card.CardBrand} to use as a separating scheme
- * @return an array of strings with the number groups, in order. If the number is not complete,
- * some of the array entries may be {@code null}.
- */
-
+/// Separates a card number according to the brand requirements, including prefixes of card numbers, so that the groups can be easily displayed if the user is typing them in.
+/// Note that this does not verify that the card number is valid, or even that it is a number.
+///
+///  * [spacelessCardNumber], the raw card number, without spaces
+///  * [brand], to use as a separating scheme
+///  Returns an array of strings with the number groups, in order. If the number is not complete, some of the array entries may be `null`
 List<String> separateCardNumberGroups(
-    String spacelessCardNumber, String brand) {
+  String spacelessCardNumber,
+  String brand,
+) {
+  //
   if (spacelessCardNumber.length > 16) {
     spacelessCardNumber = spacelessCardNumber.substring(0, 16);
   }
+  //
   List<String> numberGroups;
+  //
   if (brand == StripeCard.AMERICAN_EXPRESS) {
     numberGroups = new List(3);
 
