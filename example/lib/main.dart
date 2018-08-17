@@ -3,6 +3,7 @@ import 'dart:convert' show utf8, json;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stripe_api/card_number_text_field.dart';
 import 'package:stripe_api/stripe_api.dart';
 import 'package:http/http.dart' as http;
 
@@ -38,6 +39,22 @@ class _MyAppState extends State<MyApp> {
           alignment: Alignment.topCenter,
           child: new Column(
             children: <Widget>[
+              new SizedBox(height: 12.0),
+              new TextField(
+                inputFormatters: [
+                  CardNumberFormatter(
+                    onCardBrandChanged: (brand) {
+                      print('onCardBrandChanged : ' + brand);
+                    },
+                    onCardNumberComplete: (){
+                      print('onCardNumberComplete');
+                    },
+                    onShowError: (isError) {
+                      print('Is card number valid ? ${!isError}');
+                    }
+                  ),
+                ],
+              ),
               new SizedBox(height: 12.0),
               new FlatButton(
                   onPressed: _startSession, child: new Text('Start Session')),

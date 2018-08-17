@@ -21,7 +21,6 @@ const int MAX_LENGTH_AMEX_DINERS = 17;
  */
 bool isValidCardNumber(String cardNumber) {
   String normalizedNumber = removeSpacesAndHyphens(cardNumber);
-  print('Normalized number : ' + normalizedNumber);
   return isValidLuhnNumber(normalizedNumber) &&
       isValidCardLength(normalizedNumber);
 }

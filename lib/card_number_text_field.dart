@@ -4,56 +4,42 @@ import 'package:flutter/services.dart';
 import 'stripe_text_utils.dart';
 import 'card_utils.dart';
 import 'model/card.dart';
+import 'dart:math' as math;
 
 final Set<int> SPACE_SET_COMMON = new Set()..add(4)..add(9)..add(14);
 final Set<int> SPACE_SET_AMEX = Set()..add(4)..add(11);
 
-class CardNumberTextField extends InheritedWidget {
+
+class CardNumberFormatter extends TextInputFormatter {
   final ValueChanged<String> onCardBrandChanged;
   final VoidCallback onCardNumberComplete;
-
-  CardNumberTextField({
-    Key key,
-    @required TextField child,
-    this.onCardBrandChanged,
-    this.onCardNumberComplete,
-  }) : super(key: key, child: child) {
-    child.inputFormatters.add(
-      new _CardNumberFormatter(
-        onCardBrandChanged,
-        onCardNumberComplete,
-      ),
-    );
-  }
-
-  @override
-  bool updateShouldNotify(InheritedWidget oldWidget) {
-    return true;
-  }
-}
-
-class _CardNumberFormatter extends TextInputFormatter {
-  final ValueChanged<String> onCardBrandChanged;
-  final VoidCallback onCardNumberComplete;
+  final ValueChanged<bool> onShowError;
 
   String _cardBrand;
   int _lengthMax = 19;
+  bool _isCardNumberValid = false;
 
-  _CardNumberFormatter(this.onCardBrandChanged, this.onCardNumberComplete) {
+  CardNumberFormatter({
+    this.onCardBrandChanged,
+    this.onCardNumberComplete,
+    this.onShowError,
+  }) {
     _cardBrand = StripeCard.UNKNOWN;
   }
 
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    //if()
+    if (oldValue.text == newValue.text) {
+      return newValue;
+    }
+
     if (newValue.composing.isValid && newValue.composing.start < 4) {
       _updateCardBrandFromNumber(newValue.text);
     }
 
     String spacelessNumber = removeSpacesAndHyphens(newValue.text);
     if (spacelessNumber == null) {
-      //return newValue.copyWith(text: );
       return newValue;
     }
 
@@ -72,12 +58,58 @@ class _CardNumberFormatter extends TextInputFormatter {
       formattedNumber += cardParts[i];
     }
 
-    /*
-    int cursorPosition = _updateSelectionIndex(formattedNumber.length,
-        oldValue.composing.start, newValue.composing.end);
-        */
+    int editActionAddition =
+        newValue.text.length > oldValue.text.length ? 1 : 0;
+    int cursorPosition = _updateSelectionIndex(
+        formattedNumber.length, newValue.selection.start, editActionAddition);
 
-    return null;
+    final computedValue = newValue.copyWith(
+      text: formattedNumber,
+      selection: TextSelection.collapsed(offset: cursorPosition),
+    );
+
+    final resultValue = _applyLengthFilter(computedValue);
+    if (resultValue.text.length == _lengthMax) {
+      var before = _isCardNumberValid;
+      _isCardNumberValid = isValidCardNumber(resultValue.text);
+      if (onShowError != null) {
+        onShowError(!_isCardNumberValid);
+      }
+      if (!before && _isCardNumberValid && onCardNumberComplete != null) {
+        onCardNumberComplete();
+      }
+    } else {
+      _isCardNumberValid =
+          resultValue.text != null && isValidCardNumber(resultValue.text);
+      // Don't show errors if we aren't full-length.
+      if (onShowError != null) {
+        onShowError(false);
+      }
+    }
+    return resultValue;
+  }
+
+  TextEditingValue _applyLengthFilter(TextEditingValue computedValue) {
+    if (_lengthMax != null && computedValue.text.runes.length > _lengthMax) {
+      final TextSelection newSelection = computedValue.selection.copyWith(
+        baseOffset: math.min(computedValue.selection.start, _lengthMax),
+        extentOffset: math.min(computedValue.selection.end, _lengthMax),
+      );
+
+      final RuneIterator iterator = new RuneIterator(computedValue.text);
+      if (iterator.moveNext())
+        for (int count = 0; count < _lengthMax; ++count)
+          if (!iterator.moveNext()) break;
+      final String truncated =
+          computedValue.text.substring(0, iterator.rawIndex);
+      return new TextEditingValue(
+        text: truncated,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    } else {
+      return computedValue;
+    }
   }
 
   void _updateCardBrand(String brand) {
@@ -91,13 +123,7 @@ class _CardNumberFormatter extends TextInputFormatter {
       onCardBrandChanged(brand);
     }
 
-    int oldLength = _lengthMax;
     _lengthMax = getLengthForBrand(brand);
-    if (oldLength == _lengthMax) {
-      return;
-    }
-
-    //updateLengthFilter(); TODO:://
   }
 
   void _updateCardBrandFromNumber(String partialNumber) {
