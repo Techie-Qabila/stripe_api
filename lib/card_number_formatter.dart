@@ -7,8 +7,8 @@ import 'card_utils.dart';
 import 'model/card.dart';
 import 'stripe_text_utils.dart';
 
-final _spaceSetCommon = Set()..add(4)..add(9)..add(14);
-final _spaceSetAmex = Set()..add(4)..add(11);
+final _spaceSetCommon = Set<int>()..add(4)..add(9)..add(14);
+final _spaceSetAmex = Set<int>()..add(4)..add(11);
 
 class CardNumberFormatter extends TextInputFormatter {
   final ValueChanged<String> onCardBrandChanged;
