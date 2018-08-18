@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Completed CardNumberFormatter class
+
+
 ## 1.0.0
 
 * Fixed publish --dry-run issues/warnings
