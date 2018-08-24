@@ -7,8 +7,6 @@ import 'card_utils.dart';
 import 'model/card.dart';
 import 'stripe_text_utils.dart';
 
-final _spaceSetCommon = Set<int>()..add(4)..add(9)..add(14);
-final _spaceSetAmex = Set<int>()..add(4)..add(11);
 
 class CardNumberFormatter extends TextInputFormatter {
   final ValueChanged<String> onCardBrandChanged;
@@ -30,11 +28,12 @@ class CardNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
+
     if (oldValue.text == newValue.text) {
       return newValue;
     }
 
-    if (newValue.composing.isValid && newValue.composing.start < 4) {
+    if (newValue.text.length < 4) {
       _updateCardBrandFromNumber(newValue.text);
     }
 
@@ -58,20 +57,23 @@ class CardNumberFormatter extends TextInputFormatter {
       formattedNumber += cardParts[i];
     }
 
-    int editActionAddition =
-        newValue.text.length > oldValue.text.length ? 1 : 0;
-    int cursorPosition = _updateSelectionIndex(
-        formattedNumber.length, newValue.selection.start, editActionAddition);
+
+    TextSelection selection;
+    if(newValue.selection.start >= formattedNumber.length - 1) {
+      selection = TextSelection.fromPosition(TextPosition(offset: formattedNumber.length));
+    } else {
+      selection = newValue.selection;
+    }
 
     final computedValue = newValue.copyWith(
-      text: formattedNumber,
-      selection: TextSelection.collapsed(offset: cursorPosition),
+        text: formattedNumber,
+        composing: TextRange.empty,
+        selection: selection,
     );
 
-    final resultValue = _applyLengthFilter(computedValue);
-    if (resultValue.text.length == _lengthMax) {
+    if(computedValue.text.length == _lengthMax) {
       var before = _isCardNumberValid;
-      _isCardNumberValid = isValidCardNumber(resultValue.text);
+      _isCardNumberValid = isValidCardNumber(computedValue.text);
       if (onShowError != null) {
         onShowError(!_isCardNumberValid);
       }
@@ -80,36 +82,14 @@ class CardNumberFormatter extends TextInputFormatter {
       }
     } else {
       _isCardNumberValid =
-          resultValue.text != null && isValidCardNumber(resultValue.text);
+          computedValue.text != null && isValidCardNumber(computedValue.text);
       // Don't show errors if we aren't full-length.
       if (onShowError != null) {
         onShowError(false);
       }
     }
-    return resultValue;
-  }
 
-  TextEditingValue _applyLengthFilter(TextEditingValue computedValue) {
-    if (_lengthMax != null && computedValue.text.runes.length > _lengthMax) {
-      final TextSelection newSelection = computedValue.selection.copyWith(
-        baseOffset: math.min(computedValue.selection.start, _lengthMax),
-        extentOffset: math.min(computedValue.selection.end, _lengthMax),
-      );
-
-      final RuneIterator iterator = new RuneIterator(computedValue.text);
-      if (iterator.moveNext())
-        for (int count = 0; count < _lengthMax; ++count)
-          if (!iterator.moveNext()) break;
-      final String truncated =
-          computedValue.text.substring(0, iterator.rawIndex);
-      return new TextEditingValue(
-        text: truncated,
-        selection: newSelection,
-        composing: TextRange.empty,
-      );
-    } else {
-      return computedValue;
-    }
+    return computedValue;
   }
 
   void _updateCardBrand(String brand) {
@@ -128,46 +108,6 @@ class CardNumberFormatter extends TextInputFormatter {
 
   void _updateCardBrandFromNumber(String partialNumber) {
     _updateCardBrand(getPossibleCardType(partialNumber));
-  }
-
-  /// Updates the selection index based on the current (pre-edit) index, and the size change of the number being input.
-  ///
-  /// * [newLength] the post-edit length of the string
-  /// * [editActionStart] the position in the string at which the edit action starts
-  /// * [editActionAddition] the number of new characters going into the string (zero for delete)
-  /// * Returns an index within the string at which to put the cursor
-  int _updateSelectionIndex(
-    int newLength,
-    int editActionStart,
-    int editActionAddition,
-  ) {
-    int newPosition, gapsJumped = 0;
-    //
-    Set<int> gapSet = StripeCard.AMERICAN_EXPRESS == _cardBrand
-        ? _spaceSetAmex
-        : _spaceSetCommon;
-    //
-    bool skipBack = false;
-    //
-    for (int gap in gapSet) {
-      if (editActionStart <= gap &&
-          editActionStart + editActionAddition > gap) {
-        gapsJumped++;
-      }
-
-      // editActionAddition can only be 0 if we are deleting,
-      // so we need to check whether or not to skip backwards one space
-      if (editActionAddition == 0 && editActionStart == gap + 1) {
-        skipBack = true;
-      }
-    }
-
-    newPosition = editActionStart + editActionAddition + gapsJumped;
-    if (skipBack && newPosition > 0) {
-      newPosition--;
-    }
-
-    return newPosition <= newLength ? newPosition : newLength;
   }
 }
 

@@ -19,6 +19,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
+  final TextEditingController controller = new TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +41,7 @@ class _MyAppState extends State<MyApp> {
             children: <Widget>[
               new SizedBox(height: 12.0),
               new TextField(
+                controller: controller,
                 inputFormatters: [
                   CardNumberFormatter(
                     onCardBrandChanged: (brand) {
