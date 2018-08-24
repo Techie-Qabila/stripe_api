@@ -1,3 +1,7 @@
+## 1.0.3
+
+* CardNumberFormatter code refactored
+
 ## 1.0.2
 
 * Fixed minor issue
