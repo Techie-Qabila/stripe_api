@@ -1,6 +1,6 @@
 name: stripe_api
 description: A library to itegrate stripe payment gateway in flutter app
-version: 1.0.3
+version: 1.1.0
 author: Muhammad Ahmed <mahmed8003@gmail.com>
 homepage: https://github.com/mahmed8003/stripe_api
 
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  http: "^0.11.3+17"
+  http: "^0.12.0"
 
 dev_dependencies:
   flutter_test:

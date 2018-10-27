@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Updated 'http' package version
+
 ## 1.0.3
 
 * CardNumberFormatter code refactored
