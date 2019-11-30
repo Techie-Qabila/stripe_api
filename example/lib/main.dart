@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  final TextEditingController controller = new TextEditingController();
+  final TextEditingController controller = new CreditCardMaskedTextController();
 
   @override
   void initState() {
@@ -42,19 +42,6 @@ class _MyAppState extends State<MyApp> {
               new SizedBox(height: 12.0),
               new TextField(
                 controller: controller,
-                inputFormatters: [
-                  CardNumberFormatter(
-                    onCardBrandChanged: (brand) {
-                      print('onCardBrandChanged : ' + brand);
-                    },
-                    onCardNumberComplete: (){
-                      print('onCardNumberComplete');
-                    },
-                    onShowError: (isError) {
-                      print('Is card number valid ? ${!isError}');
-                    }
-                  ),
-                ],
               ),
               new SizedBox(height: 12.0),
               new FlatButton(
