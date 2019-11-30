@@ -17,6 +17,7 @@ export 'model/customer.dart';
 export 'model/shipping_information.dart';
 export 'model/source.dart';
 export 'model/token.dart';
+export 'ui/card_input_widget.dart';
 
 class Stripe {
   static Stripe _instance;
