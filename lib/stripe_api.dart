@@ -11,13 +11,13 @@ import 'model/token.dart';
 import 'stripe_api_handler.dart';
 
 export 'card_utils.dart';
-export 'credit_card_mask_controller.dart';
 export 'model/card.dart';
 export 'model/customer.dart';
 export 'model/shipping_information.dart';
 export 'model/source.dart';
 export 'model/token.dart';
 export 'ui/card_input_widget.dart';
+export 'ui/masked_text_controller.dart';
 
 class Stripe {
   static Stripe _instance;

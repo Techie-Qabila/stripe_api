@@ -18,7 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   final TextEditingController controller = new CreditCardMaskedTextController();
 
   @override
@@ -40,6 +39,11 @@ class _MyAppState extends State<MyApp> {
           child: new Column(
             children: <Widget>[
               new SizedBox(height: 12.0),
+              CardInputWidget(
+                onCardChanged: (card) {
+                  print(card);
+                },
+              ),
               new TextField(
                 controller: controller,
               ),

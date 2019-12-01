@@ -25,8 +25,8 @@ class ModelUtils {
       return true;
     }
 
-    // Expires at end of specified month, Calendar month starts at 0
-    return normalizeYear(year, now) == now.year && month < (now.month + 1);
+    // Expires at end of specified month, Calendar month starts at 1
+    return normalizeYear(year, now) == now.year && month < now.month;
   }
 
   /**
