@@ -138,7 +138,7 @@ class _MyAppState extends State<MyApp> {
     print(url);
 
     final response = await http.get(
-      url,
+      Uri.parse(url),
       headers: _getHeaders(accessToken: _accessToken),
     );
 
