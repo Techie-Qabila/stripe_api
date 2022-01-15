@@ -24,7 +24,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
   static const String MULTIBANCO = "multibanco";
   static const String UNKNOWN = "unknown";
 
-  static final Set<String> MODELED_TYPES = new Set()
+  static final Set<String> MODELED_TYPES = Set()
     ..add(CARD)
     ..add(SEPA_DEBIT);
 
@@ -63,27 +63,27 @@ class Source extends StripeJsonModel implements StripePaymentSource {
   static const String FIELD_USAGE = "usage";
 
   @override
-  String id;
-  int amount;
-  String clientSecret;
-  SourceCodeVerification codeVerification;
-  int created;
-  String currency;
-  String typeRaw;
-  String flow;
-  bool liveMode;
-  Map<String, String> metaData;
-  SourceOwner owner;
-  SourceReceiver receiver;
-  SourceRedirect redirect;
-  String status;
-  Map<String, Object> sourceTypeData;
-  StripeSourceTypeModel sourceTypeModel;
-  String type;
-  String usage;
+  late String id;
+  int? amount;
+  String? clientSecret;
+  SourceCodeVerification? codeVerification;
+  int? created;
+  String? currency;
+  String? typeRaw;
+  String? flow;
+  bool? liveMode;
+  Map<String, String>? metaData;
+  SourceOwner? owner;
+  SourceReceiver? receiver;
+  SourceRedirect? redirect;
+  String? status;
+  Map<String, dynamic>? sourceTypeData;
+  StripeSourceTypeModel? sourceTypeModel;
+  String? type;
+  String? usage;
 
   Source({
-    this.id,
+    this.id = '',
     this.amount,
     this.clientSecret,
     this.codeVerification,
@@ -104,13 +104,13 @@ class Source extends StripeJsonModel implements StripePaymentSource {
   });
 
   Source.fromJson(Map<String, dynamic> json) {
-    id = optString(json, FIELD_ID);
+    id = optString(json, FIELD_ID) ?? '';
     amount = optInteger(json, FIELD_AMOUNT);
     clientSecret = optString(json, FIELD_CLIENT_SECRET);
     final codeVerf = json[FIELD_CODE_VERIFICATION];
     if (codeVerf != null) {
       codeVerification =
-          new SourceCodeVerification.fromJson(codeVerf.cast<String, dynamic>());
+          SourceCodeVerification.fromJson(codeVerf.cast<String, dynamic>());
     }
 
     created = optInteger(
@@ -123,39 +123,35 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     if (metaDataObj != null) {
       metaData = metaDataObj.cast<String, String>();
     } else {
-      metaData = new Map();
+      metaData = {};
     }
 
     final ownerObject = json[FIELD_OWNER];
     if (ownerObject != null) {
-      owner = new SourceOwner.fromJson(ownerObject.cast<String, dynamic>());
+      owner = SourceOwner.fromJson(ownerObject.cast<String, dynamic>());
     }
 
     var receiverObject = json[FIELD_RECEIVER];
     if (receiverObject != null) {
       receiver =
-          new SourceReceiver.fromJson(receiverObject.cast<String, dynamic>());
+          SourceReceiver.fromJson(receiverObject.cast<String, dynamic>());
     }
 
     var redirectObject = json[FIELD_REDIRECT];
     if (redirectObject != null) {
       redirect =
-          new SourceRedirect.fromJson(redirectObject.cast<String, dynamic>());
+          SourceRedirect.fromJson(redirectObject.cast<String, dynamic>());
     }
 
     status = asSourceStatus(optString(json, FIELD_STATUS));
 
-    String typeRaw = optString(json, FIELD_TYPE);
-    if (typeRaw == null) {
-      // We can't allow this type to be null, as we are using it for a key
-      // on the JSON object later.
-      typeRaw = UNKNOWN;
-    }
+    String? typeRaw = optString(json, FIELD_TYPE);
+    // We can't allow this type to be null, as we are using it for a key
+    // on the JSON object later.
+    typeRaw ??= UNKNOWN;
 
     type = asSourceType(typeRaw);
-    if (type == null) {
-      type = UNKNOWN;
-    }
+    type ??= UNKNOWN;
 
     // Until we have models for all types, keep the original hash and the
     // model object. The customType variable can be any field, and is not altered by
@@ -172,7 +168,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
 
   @override
   Map<String, dynamic> toMap() {
-    Map<String, Object> hashMap = new Map();
+    Map<String, dynamic> hashMap = {};
     hashMap[FIELD_ID] = id;
     hashMap[FIELD_AMOUNT] = amount;
     hashMap[FIELD_CLIENT_SECRET] = clientSecret;
@@ -192,7 +188,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     StripeJsonModel.putStripeJsonModelMapIfNotNull(
         hashMap, FIELD_REDIRECT, redirect);
 
-    hashMap[typeRaw] = sourceTypeData;
+    hashMap[typeRaw!] = sourceTypeData;
 
     hashMap[FIELD_STATUS] = status;
     hashMap[FIELD_TYPE] = typeRaw;
@@ -201,7 +197,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     return hashMap;
   }
 
-  static String asSourceStatus(String sourceStatus) {
+  static String? asSourceStatus(String? sourceStatus) {
     if (PENDING == sourceStatus) {
       return PENDING;
     } else if (CHARGEABLE == sourceStatus) {
@@ -216,7 +212,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     return null;
   }
 
-  static String asSourceType(String sourceType) {
+  static String? asSourceType(String sourceType) {
     if (CARD == sourceType) {
       return CARD;
     } else if (THREE_D_SECURE == sourceType) {
@@ -242,7 +238,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     return null;
   }
 
-  static String asUsage(String usage) {
+  static String? asUsage(String? usage) {
     if (REUSABLE == usage) {
       return REUSABLE;
     } else if (SINGLE_USE == usage) {
@@ -251,7 +247,7 @@ class Source extends StripeJsonModel implements StripePaymentSource {
     return null;
   }
 
-  static String asSourceFlow(String sourceFlow) {
+  static String? asSourceFlow(String? sourceFlow) {
     if (REDIRECT == sourceFlow) {
       return REDIRECT;
     } else if (RECEIVER == sourceFlow) {

@@ -22,13 +22,13 @@ class Token implements StripePaymentSource {
   @override
   final String id;
 
-  final String type;
+  final String? type;
   final DateTime created;
   final bool liveMode;
-  final bool used;
+  final bool? used;
 
   //final BankAccount bankAccount;
-  final StripeCard card;
+  final StripeCard? card;
 
   Token._internal(
     this.id,
@@ -40,22 +40,25 @@ class Token implements StripePaymentSource {
   });
 
   factory Token(Map<String, dynamic> json) {
-    String tokenId = optString(json, FIELD_ID);
-    int createdTimeStamp = optInteger(json, FIELD_CREATED);
-    bool liveMode = optBoolean(json, FIELD_LIVEMODE);
-    String tokenType = asTokenType(optString(json, FIELD_TYPE));
-    bool used = optBoolean(json, FIELD_USED);
+    String? tokenId = optString(json, FIELD_ID);
+    int? createdTimeStamp = optInteger(json, FIELD_CREATED);
+    bool? liveMode = optBoolean(json, FIELD_LIVEMODE);
+    String? tokenType = asTokenType(optString(json, FIELD_TYPE));
+    bool? used = optBoolean(json, FIELD_USED);
+
+    late Token token;
 
     if (tokenId == null || createdTimeStamp == null || liveMode == null) {
-      return null;
+      token = Token._internal("-1", false, DateTime.now(), "", false);
+      return token;
     }
-    DateTime date = new DateTime.fromMillisecondsSinceEpoch(2000);
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(2000);
 
-    Token token;
     if (Token.TYPE_BANK_ACCOUNT == tokenType) {
       final bankAccountObject = json[FIELD_BANK_ACCOUNT];
       if (bankAccountObject == null) {
-        return null;
+        token = Token._internal("-1", false, DateTime.now(), "", false);
+        return token;
       }
       //BankAccount bankAccount = BankAccount.fromJson(bankAccountObject);
       //token = new Token(tokenId, liveMode, date, used, bankAccount);
@@ -63,25 +66,24 @@ class Token implements StripePaymentSource {
     } else if (Token.TYPE_CARD == tokenType) {
       final cardObject = json[FIELD_CARD];
       if (cardObject == null) {
-        return null;
+        token = Token._internal("-1", false, DateTime.now(), "", false);
+        return token;
       }
       StripeCard card = StripeCard.fromJson(cardObject.cast<String, dynamic>());
-      token = new Token._internal(tokenId, liveMode, date, tokenType, used,
-          card: card);
+      token =
+          Token._internal(tokenId, liveMode, date, tokenType, used, card: card);
     } else if (Token.TYPE_PII == tokenType || Token.TYPE_ACCOUNT == tokenType) {
-      token = new Token._internal(tokenId, liveMode, date, tokenType, used);
+      token = Token._internal(tokenId, liveMode, date, tokenType, used);
     }
     return token;
   }
 
-  /**
-   * Converts an unchecked String value to a {@link TokenType} or {@code null}.
-   *
-   * @param possibleTokenType a String that might match a {@link TokenType} or be empty
-   * @return {@code null} if the input is blank or otherwise does not match a {@link TokenType},
-   * else the appropriate {@link TokenType}.
-   */
-  static String asTokenType(String possibleTokenType) {
+  /// Converts an unchecked String value to a {@link TokenType} or {@code null}.
+  ///
+  /// @param possibleTokenType a String that might match a {@link TokenType} or be empty
+  /// @return {@code null} if the input is blank or otherwise does not match a {@link TokenType},
+  /// else the appropriate {@link TokenType}.
+  static String? asTokenType(String? possibleTokenType) {
     if (possibleTokenType == null || possibleTokenType.trim().isEmpty) {
       return null;
     }

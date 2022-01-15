@@ -1,8 +1,8 @@
 import 'stripe_json_model.dart';
 
 abstract class StripeSourceTypeModel extends StripeJsonModel {
-  Map<String, Object> additionalFields = new Map();
-  Set<String> standardFields = new Set();
+  Map<String, dynamic> additionalFields = {};
+  Set<String> standardFields = Set();
   static const String NULL = "null";
 
   void addStandardFields(List<String> fields) {
@@ -10,7 +10,7 @@ abstract class StripeSourceTypeModel extends StripeJsonModel {
   }
 
   static void putAdditionalFieldsIntoMap(
-      Map<String, Object> map, Map<String, Object> additionalFields) {
+      Map<String, dynamic>? map, Map<String, dynamic>? additionalFields) {
     if (map == null || additionalFields == null || additionalFields.isEmpty) {
       return;
     }

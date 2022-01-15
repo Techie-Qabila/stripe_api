@@ -18,7 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   final TextEditingController controller = new CreditCardMaskedTextController();
 
   @override
@@ -76,7 +75,8 @@ class _MyAppState extends State<MyApp> {
 
   void _getCustomer() async {
     try {
-      final customer = await CustomerSession.instance.retrieveCurrentCustomer();
+      final customer =
+          await CustomerSession.instance!.retrieveCurrentCustomer();
       print(customer);
     } catch (error) {
       print(error);
@@ -91,9 +91,9 @@ class _MyAppState extends State<MyApp> {
     StripeCard card = new StripeCard(
         number: '4242 4242 4242 4242', cvc: '713', expMonth: 5, expYear: 2019);
     card.name = 'Jhonny Bravo';
-    Stripe.instance.createCardToken(card).then((c) {
+    Stripe.instance!.createCardToken(card).then((c) {
       print(c);
-      return CustomerSession.instance.addCustomerSource(c.id);
+      return CustomerSession.instance!.addCustomerSource(c.id);
     }).then((source) {
       print(source);
     }).catchError((error) {
@@ -103,10 +103,11 @@ class _MyAppState extends State<MyApp> {
 
   void _changeDefaultCard() async {
     try {
-      final customer = await CustomerSession.instance.retrieveCurrentCustomer();
+      final customer =
+          await CustomerSession.instance!.retrieveCurrentCustomer();
       final card = customer.sources[1].asCard();
       final v =
-          await CustomerSession.instance.updateCustomerDefaultSource(card.id);
+          await CustomerSession.instance!.updateCustomerDefaultSource(card!.id);
       print(v);
     } catch (error) {
       print(error);
@@ -115,17 +116,18 @@ class _MyAppState extends State<MyApp> {
 
   void _deleteCard() async {
     try {
-      final customer = await CustomerSession.instance.retrieveCurrentCustomer();
-      String id;
+      final customer =
+          await CustomerSession.instance!.retrieveCurrentCustomer();
+      late String id;
       for (var c in customer.sources) {
-        StripeCard card = c.asCard();
+        StripeCard? card = c.asCard();
         if (card != null) {
           id = card.id;
           break;
         }
       }
 
-      final v = await CustomerSession.instance.deleteCustomerSource(id);
+      final v = await CustomerSession.instance!.deleteCustomerSource(id);
       print(v);
     } catch (error) {
       print(error);
@@ -153,7 +155,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Map<String, String> _getHeaders(
-      {String accessToken,
+      {required String accessToken,
       String acceptType = ContentTypeJson,
       String contentType = ContentTypeJson}) {
     final Map<String, String> headers = new Map<String, String>();
@@ -173,7 +175,7 @@ class _MyAppState extends State<MyApp> {
 class CardItem extends StatelessWidget {
   final StripeCard card;
 
-  const CardItem({Key key, this.card}) : super(key: key);
+  const CardItem({Key? key, required this.card}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

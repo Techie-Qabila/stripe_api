@@ -7,10 +7,10 @@ class SourceReceiver extends StripeJsonModel {
   static const String FIELD_AMOUNT_RETURNED = "amount_returned";
 
   // This is not to be confused with the Address object
-  String address;
-  int amountCharged;
-  int amountReceived;
-  int amountReturned;
+  String? address;
+  int? amountCharged;
+  int? amountReceived;
+  int? amountReturned;
 
   //
   SourceReceiver({
@@ -29,7 +29,7 @@ class SourceReceiver extends StripeJsonModel {
 
   @override
   Map<String, dynamic> toMap() {
-    Map<String, Object> hashMap = new Map();
+    Map<String, dynamic> hashMap = {};
 
     hashMap[FIELD_ADDRESS] = address;
     hashMap[FIELD_AMOUNT_CHARGED] = amountCharged;

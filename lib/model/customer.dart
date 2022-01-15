@@ -21,38 +21,38 @@ class Customer extends StripeJsonModel {
 
   static const String VALUE_APPLE_PAY = "apple_pay";
 
-  String id;
+  late String id;
 
-  String defaultSource;
-  ShippingInformation shippingInformation;
+  String? defaultSource;
+  late ShippingInformation shippingInformation;
 
   List<CustomerSource> sources = [];
-  bool hasMore;
-  int totalCount;
-  String url;
+  late bool hasMore;
+  late int totalCount;
+  String? url;
 
   Customer.fromJson(Map<String, dynamic> json) {
-    id = optString(json, FIELD_ID);
+    id = optString(json, FIELD_ID) ?? '';
     defaultSource = optString(json, FIELD_DEFAULT_SOURCE);
     final shipInfoObject = json[FIELD_SHIPPING]; //.cast<String, dynamic>()
     if (shipInfoObject != null) {
-      shippingInformation = new ShippingInformation.fromJson(
-          shipInfoObject.cast<String, dynamic>());
+      shippingInformation =
+          ShippingInformation.fromJson(shipInfoObject.cast<String, dynamic>());
     }
 
-    final Map<String, dynamic> sources =
+    final Map<String, dynamic>? sources =
         json[FIELD_SOURCES].cast<String, dynamic>();
     if (sources != null && (VALUE_LIST == optString(sources, FIELD_OBJECT))) {
-      hasMore = optBoolean(sources, FIELD_HAS_MORE);
-      totalCount = optInteger(sources, FIELD_TOTAL_COUNT);
+      hasMore = optBoolean(sources, FIELD_HAS_MORE) ?? false;
+      totalCount = optInteger(sources, FIELD_TOTAL_COUNT) ?? -1;
       url = optString(sources, FIELD_URL);
 
-      List<CustomerSource> sourceDataList = new List();
-      List dataArray = sources[FIELD_DATA] ?? new List();
+      List<CustomerSource> sourceDataList = [];
+      List dataArray = sources[FIELD_DATA] ?? [];
       for (int i = 0; i < dataArray.length; i++) {
         try {
           var customerSourceObject = dataArray[i];
-          CustomerSource sourceData = new CustomerSource.fromJson(
+          CustomerSource? sourceData = CustomerSource.fromJson(
               customerSourceObject.cast<String, dynamic>());
           if (sourceData == null ||
               VALUE_APPLE_PAY == sourceData.getTokenizationMethod()) {
@@ -69,7 +69,7 @@ class Customer extends StripeJsonModel {
 
   @override
   Map<String, dynamic> toMap() {
-    Map<String, Object> mapObject = new Map();
+    Map<String, dynamic> mapObject = {};
     mapObject[FIELD_ID] = id;
     mapObject[FIELD_OBJECT] = VALUE_CUSTOMER;
     mapObject[FIELD_DEFAULT_SOURCE] = defaultSource;
@@ -77,7 +77,7 @@ class Customer extends StripeJsonModel {
     StripeJsonModel.putStripeJsonModelMapIfNotNull(
         mapObject, FIELD_SHIPPING, shippingInformation);
 
-    Map<String, Object> sourcesObject = new Map();
+    Map<String, dynamic> sourcesObject = {};
     sourcesObject[FIELD_HAS_MORE] = hasMore;
     sourcesObject[FIELD_TOTAL_COUNT] = totalCount;
     sourcesObject[FIELD_OBJECT] = VALUE_LIST;

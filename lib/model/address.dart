@@ -10,12 +10,12 @@ class Address extends StripeJsonModel {
   static const String FIELD_POSTAL_CODE = "postal_code";
   static const String FIELD_STATE = "state";
 
-  String city;
-  String country;
-  String line1;
-  String line2;
-  String postalCode;
-  String state;
+  String? city;
+  String? country;
+  String? line1;
+  String? line2;
+  String? postalCode;
+  String? state;
 
   Address({
     this.city,
@@ -37,7 +37,7 @@ class Address extends StripeJsonModel {
 
   @override
   Map<String, dynamic> toMap() {
-    Map<String, Object> hashMap = new Map();
+    Map<String, dynamic> hashMap = {};
     hashMap[FIELD_CITY] = city;
     hashMap[FIELD_COUNTRY] = country;
     hashMap[FIELD_LINE_1] = line1;
