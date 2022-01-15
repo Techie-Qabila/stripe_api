@@ -9,8 +9,8 @@ class SourceCodeVerification extends StripeJsonModel {
   static const String FIELD_STATUS = "status";
   static const int INVALID_ATTEMPTS_REMAINING = -1;
 
-  int attemptsRemaining;
-  String status;
+  late int attemptsRemaining;
+  String? status;
 
   SourceCodeVerification(this.attemptsRemaining, this.status);
 
@@ -22,7 +22,7 @@ class SourceCodeVerification extends StripeJsonModel {
 
   @override
   Map<String, dynamic> toMap() {
-    Map<String, Object> hashMap = new Map();
+    Map<String, dynamic> hashMap = {};
     hashMap[FIELD_ATTEMPTS_REMAINING] = attemptsRemaining;
     if (status != null) {
       hashMap[FIELD_STATUS] = status;
@@ -30,7 +30,7 @@ class SourceCodeVerification extends StripeJsonModel {
     return hashMap;
   }
 
-  static String _asStatus(String stringStatus) {
+  static String? _asStatus(String? stringStatus) {
     if (stringStatus == null) {
       return null;
     } else if (PENDING == stringStatus) {

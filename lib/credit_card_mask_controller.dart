@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:stripe_api/stripe_api.dart';
 
 class CreditCardMaskedTextController extends TextEditingController {
-  CreditCardMaskedTextController({String text}) : super(text: text) {
-    this._translator = CreditCardMaskedTextController._getDefaultTranslator();
+  CreditCardMaskedTextController({String text = ''}) : super(text: text) {
+    _translator = CreditCardMaskedTextController._getDefaultTranslator();
 
-    this.addListener(() {
-      this._updateText(this.text);
+    addListener(() {
+      _updateText(this.text);
     });
 
-    this._updateText(this.text);
+    _updateText(this.text);
   }
 
-  static const CARD_MASKS = const {
+  static const Map<String, String> CARD_MASKS = {
     StripeCard.UNKNOWN: '0000 0000 0000 0000',
     StripeCard.AMERICAN_EXPRESS: '0000 000000 00000',
     StripeCard.DISCOVER: '0000 0000 0000 0000',
@@ -23,24 +23,24 @@ class CreditCardMaskedTextController extends TextEditingController {
     StripeCard.UNIONPAY: '0000 0000 0000 0000',
   };
 
-  Map<String, RegExp> _translator;
+  late Map<String, RegExp> _translator;
   String _lastUpdatedText = '';
 
   void _updateText(String text) {
-    if (text != null) {
-      final cardType = getPossibleCardType(text, shouldNormalize: true);
-      final mask = CARD_MASKS[cardType];
-      this.text = this._applyMask(mask, text);
+    if (text.isNotEmpty) {
+      final String cardType = getPossibleCardType(text, shouldNormalize: true);
+      final String mask = CARD_MASKS[cardType]!;
+      this.text = _applyMask(mask, text);
     } else {
       this.text = '';
     }
-    this._lastUpdatedText = this.text;
+    _lastUpdatedText = this.text;
   }
 
   void _moveCursorToEnd() {
-    var text = this._lastUpdatedText;
-    this.selection = TextSelection.fromPosition(
-      TextPosition(offset: (text ?? '').length),
+    var text = _lastUpdatedText;
+    selection = TextSelection.fromPosition(
+      TextPosition(offset: text.length),
     );
   }
 
@@ -48,7 +48,7 @@ class CreditCardMaskedTextController extends TextEditingController {
   set text(String newText) {
     if (super.text != newText) {
       super.text = newText;
-      this._moveCursorToEnd();
+      _moveCursorToEnd();
     }
   }
 
@@ -90,8 +90,8 @@ class CreditCardMaskedTextController extends TextEditingController {
       }
 
       // apply translator if match
-      if (this._translator.containsKey(maskChar)) {
-        if (this._translator[maskChar].hasMatch(valueChar)) {
+      if (_translator.containsKey(maskChar)) {
+        if (_translator[maskChar]!.hasMatch(valueChar)) {
           result += valueChar;
           maskCharIndex += 1;
         }

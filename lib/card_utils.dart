@@ -12,27 +12,23 @@ const int MAX_LENGTH_COMMON = 19;
 // because Diners Club has one more space, but one less digit.
 const int MAX_LENGTH_AMEX_DINERS = 17;
 
-/**
- * Checks the input string to see whether or not it is a valid card number, possibly
- * with groupings separated by spaces or hyphens.
- *
- * @param cardNumber a String that may or may not represent a valid card number
- * @return {@code true} if and only if the input value is a valid card number
- */
+/// Checks the input string to see whether or not it is a valid card number, possibly
+/// with groupings separated by spaces or hyphens.
+///
+/// @param cardNumber a String that may or may not represent a valid card number
+/// @return {@code true} if and only if the input value is a valid card number
 bool isValidCardNumber(String cardNumber) {
-  String normalizedNumber = removeSpacesAndHyphens(cardNumber);
-  return isValidLuhnNumber(normalizedNumber) &&
-      isValidCardLength(normalizedNumber);
+  String? normalizedNumber = removeSpacesAndHyphens(cardNumber);
+  return isValidLuhnNumber(normalizedNumber ?? '') &&
+      isValidCardLength(normalizedNumber ?? '', cardBrand: '');
 }
 
-/**
- * Checks the input string to see whether or not it is a valid Luhn number.
- *
- * @param cardNumber a String that may or may not represent a valid Luhn number
- * @return {@code true} if and only if the input value is a valid Luhn number
- */
+/// Checks the input string to see whether or not it is a valid Luhn number.
+///
+/// @param cardNumber a String that may or may not represent a valid Luhn number
+/// @return {@code true} if and only if the input value is a valid Luhn number
 bool isValidLuhnNumber(String cardNumber) {
-  if (cardNumber == null) {
+  if (cardNumber.isEmpty) {
     return false;
   }
 
@@ -45,7 +41,7 @@ bool isValidLuhnNumber(String cardNumber) {
       return false;
     }
 
-    int digitInteger = getNumericValue(c);
+    int digitInteger = getNumericValue(c) ?? 0;
     isOdd = !isOdd;
 
     if (isOdd) {
@@ -62,19 +58,17 @@ bool isValidLuhnNumber(String cardNumber) {
   return sum % 10 == 0;
 }
 
-/**
- * Checks to see whether the input number is of the correct length, given the assumed brand of
- * the card. This function does not perform a Luhn check.
- *
- * @param cardNumber the card number with no spaces or dashes
- * @param cardBrand a {@link CardBrand} used to get the correct size
- * @return {@code true} if the card number is the correct length for the assumed brand
- */
-bool isValidCardLength(String cardNumber, {String cardBrand}) {
-  if (cardBrand == null) {
+/// Checks to see whether the input number is of the correct length, given the assumed brand of
+/// the card. This function does not perform a Luhn check.
+///
+/// @param cardNumber the card number with no spaces or dashes
+/// @param cardBrand a {@link CardBrand} used to get the correct size
+/// @return {@code true} if the card number is the correct length for the assumed brand
+bool isValidCardLength(String cardNumber, {required String cardBrand}) {
+  if (cardBrand.isEmpty) {
     cardBrand = getPossibleCardType(cardNumber, shouldNormalize: false);
   }
-  if (cardNumber == null || StripeCard.UNKNOWN == cardBrand) {
+  if (cardNumber.isEmpty || StripeCard.UNKNOWN == cardBrand) {
     return false;
   }
 
@@ -96,7 +90,7 @@ String getPossibleCardType(String cardNumber, {bool shouldNormalize = true}) {
 
   String spacelessCardNumber = cardNumber;
   if (shouldNormalize) {
-    spacelessCardNumber = removeSpacesAndHyphens(cardNumber);
+    spacelessCardNumber = removeSpacesAndHyphens(cardNumber) ?? '';
   }
 
   if (hasAnyPrefix(spacelessCardNumber, StripeCard.PREFIXES_AMERICAN_EXPRESS)) {

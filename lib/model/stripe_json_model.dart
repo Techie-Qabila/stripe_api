@@ -13,20 +13,22 @@ abstract class StripeJsonModel {
   }
 
   static void putStripeJsonModelMapIfNotNull(Map<String, dynamic> upperLevelMap,
-      String key, StripeJsonModel jsonModel) {
+      String key, StripeJsonModel? jsonModel) {
     if (jsonModel == null) {
       return;
     }
     upperLevelMap[key] = jsonModel.toMap();
   }
 
-  static void putStripeJsonModelListIfNotNull(Map<String, Object> upperLevelMap,
-      String key, List<StripeJsonModel> jsonModelList) {
+  static void putStripeJsonModelListIfNotNull(
+      Map<String, dynamic> upperLevelMap,
+      String key,
+      List<StripeJsonModel>? jsonModelList) {
     if (jsonModelList == null) {
       return;
     }
 
-    List<Map<String, Object>> mapList = new List();
+    List<Map<String, dynamic>> mapList = [];
     for (int i = 0; i < jsonModelList.length; i++) {
       mapList.add(jsonModelList[i].toMap());
     }
